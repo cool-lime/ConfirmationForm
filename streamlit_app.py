@@ -8,14 +8,14 @@ st.set_page_config(page_title="Confirmation Form", page_icon="🕊")
 # Define the questions here
 questions = [
     {"label": "Full Name", "key": "name", "type": "text"},
-    {"label": "Sponsor Full Name", "key": "sponsor_name", "type": "text"},
     {"label": "Gender", "key": "gender", "type": "select", "options": ["Male", "Female"]},
+    {"label": "Sponsor Full Name", "key": "sponsor_name", "type": "text"},
     {"label": "Confirmation Name (saint's name)", "key": "confirmation_name", "type": "text"},
     {"label": "Father's Name", "key": "father_name", "type": "text"},
     {"label": "Mother's Name", "key": "mother_name", "type": "text"},
     {"label": "Church where you were baptised", "key": "baptised_church", "type": "text"},
-    {"label": "Phone number of above church (if it isn't St. Peter's)", "key": "phone_church", "type": "text"},
     {"label": "Email of above church (if it isn't St. Peter's)", "key": "email_church", "type": "text"},
+    {"label": "Phone number of above church (if it isn't St. Peter's)", "key": "phone_church", "type": "text"},
     {"label": "Address of above church (if it isn't St. Peter's)", "key": "address_church", "type": "text"},
 ]
 
