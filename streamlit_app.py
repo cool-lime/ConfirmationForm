@@ -24,6 +24,7 @@ WEB_APP_URL = "https://script.google.com/macros/s/AKfycbywX34NTj9zXZpBSPfj6aFVz_
 
 st.title("Confirmation Form")
 
+# Initialize our custom "form memory" tracking
 if "submitted_successfully" not in st.session_state:
     st.session_state.submitted_successfully = False
 
@@ -34,9 +35,14 @@ def save_to_excel(row):
         df = pd.concat([existing, df], ignore_index=True)
     df.to_excel(EXCEL_FILE, index=False)
 
+# Only show the form inputs if they haven't submitted yet
 if not st.session_state.submitted_successfully:
+    
+    # Visual container eliminates the automatic "Enter-to-Submit" behavior
     with st.container(border=True):
-        st.write("Please fill out the form below with NO SPELLING MISTAKES. This is CRUCIAL.")
+        st.write(
+            "Please fill out the form below with NO SPELLING MISTAKES. This is CRUCIAL."
+        )
 
         responses = {}
         for q in questions:
@@ -45,26 +51,33 @@ if not st.session_state.submitted_successfully:
             elif q["type"] == "select":
                 responses[q["key"]] = st.selectbox(q["label"], options=q.get("options", []), key=f"input_{q['key']}")
 
+        # Standard button will NOT trigger when hitting enter inside the inputs above
         submitted = st.button("Submit Response", type="primary")
 
         if submitted:
+            # Prevent blank submissions
             if not responses.get("name") or responses.get("name").strip() == "":
                 st.error("Please provide at least your Full Name before submitting.")
             else:
                 row = [responses.get(q["key"], "") for q in questions]
+                
                 try:
+                    # Direct web request to your verified Google URL
                     response = requests.post(WEB_APP_URL, json={"row": row}, timeout=15)
                     result = response.json()
+                    
                     if result.get("status") == "success":
                         st.session_state.submitted_successfully = True
                         st.rerun()
                     else:
                         raise Exception(result.get("message", "Google Script returned an error status."))
                 except Exception as exc:
+                    # Fallback to local file if the network drops out
                     save_to_excel(row)
                     st.session_state.submitted_successfully = True
                     st.rerun()
+
 else:
+    # Celebratory screen once successfully clicked
     st.balloons()
-    st.success("🎉 We have successfully collected your response in Google Sheets. Thank you!")
-    st.info("Your submission is locked. You can safely close this browser window.")
+    st.success("🎉 We have successfully collected your response. Please contact us if you made a mistake so we can delete incorrect information, and redo the form.")
